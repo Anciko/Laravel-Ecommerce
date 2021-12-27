@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\SubCat;
+use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -12,16 +14,17 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ApiController extends Controller
 {
-    public function login(Request $request) {
-        $input = $request->only(['email','password']);
+    public function login(Request $request)
+    {
+        $input = $request->only(['email', 'password']);
         $jwt_token = JWTAuth::attempt($input);
-        if($jwt_token) {
+        if ($jwt_token) {
             return response()->json([
                 "con" => true,
                 "msg" => "Success",
                 "token" => $jwt_token
             ]);
-        }else {
+        } else {
             return response()->json([
                 "con" => false,
                 "msg" => "Fail"
@@ -29,15 +32,16 @@ class ApiController extends Controller
         }
     }
 
-    public function register(Request $request) {
-        $validator = Validator::make($request->all(),[
+    public function register(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email',
             'phone' => 'required|digits_between:7,11',
             'password' => 'required',
             'password2' => 'required|same:password'
         ]);
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json([
                 'con' => false,
                 'msg' => 'Data Error'
@@ -55,16 +59,18 @@ class ApiController extends Controller
         ]);
     }
 
-    public function getAllCats() {
-        $cats = Category::all();
+    public function getAllCats()
+    {
+        $cats = Category::get()->load('subcats');
         return response()->json([
             "con" => true,
-            "msg" => "All Categories",
+            "msg" => "All Categories with subcats",
             "cats" => $cats
         ]);
     }
 
-    public function getSubcats($id) {
+    public function getSubcats($id)
+    {
         $subcats = SubCat::where('category_id', $id)->get();
         return response()->json([
             "con" => true,
@@ -73,7 +79,28 @@ class ApiController extends Controller
         ]);
     }
 
-    public function me() {
+    public function tags()
+    {
+        $tags = Tag::all();
+        return response()->json([
+            "con" => true,
+            "msg" => "All tags",
+            "tags" => $tags
+        ]);
+    }
+
+    public function products()
+    {
+        $products = Product::simplePaginate(2);
+        return response()->json([
+            "con" => true,
+            "msg" => "All Products",
+            'products' => $products
+        ]);
+    }
+
+    public function me()
+    {
         return response()->json([
             "con" => true,
             "msg" => "Success",

@@ -3,7 +3,7 @@
 @section('title', 'All Products')
 
 @section('content')
-    <div class="col-md-10 offset-md-1">
+    <div class="">
         {{-- @if (Session::has('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <strong> {{ Session::get('success') }} </strong>
@@ -26,6 +26,7 @@
                     <th>Price</th>
                     <th>Colors</th>
                     <th>Sizes</th>
+                    <th>Description</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -49,6 +50,7 @@
                         <td>{{ $product->price }}</td>
                         <td>{{ $product->colors }}</td>
                         <td>{{ $product->sizes }}</td>
+                        <td>{{ Str::substr($product->description , 0, 10) }}...</td>
                         <td>
                             <a href="{{ route('products.edit', $product->id) }}" class="btn btn-warning btn-sm">
                                 <i class="fas fa-edit"></i>
